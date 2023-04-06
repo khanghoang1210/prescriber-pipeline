@@ -13,4 +13,3 @@ appName = " USA Prescribers Research Report"
 current_path = os.getcwd()
 staging_dim_city = current_path + '\staging\\dimension_city'
 staging_fact = current_path + '\staging\\fact'
-print(staging_dim_city)
