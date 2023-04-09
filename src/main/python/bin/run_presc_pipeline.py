@@ -1,10 +1,12 @@
 # Import all the necessary modules
 import get_all_variables as gav
 from create_objects import get_spark_object
-from validations import get_curr_date
+from validations import get_curr_date, df_count, df_top10_rec
+from presc_run_data_ingest import load_files
 import sys
 import logging
 import logging.config
+import os
 logging.config.fileConfig(fname='../util/logging_to_file.conf')
 def main():
     try:
@@ -16,30 +18,65 @@ def main():
 
         # Initiate run_presc_data_ingestion Script
             # Load the City File
-            # Load the Prescriber Fact File
-            # Validate
-            # Set up logging Configuration Mechanism
-            # Set up Error Handling
+        for file in os.listdir(gav.staging_dim_city):
+            print('File is ' + file)
+            file_dir = gav.staging_dim_city + '\\' + file
+            print(file_dir)
+            if file.split('.')[1] == 'csv':
+                file_format = 'csv'
+                header = gav.header
+                inferSchema = gav.inferSchema
+            elif file.split('.')[1] == 'parquet':
+                file_format = 'parquet'
+                header = 'NA'
+                inferSchema = 'NA'
+        df_city = load_files(spark=spark, file_dir=file_dir, file_format=file_format, header=header, inferSchema=inferSchema)
+        # Load the Prescriber Fact File
+        for file in os.listdir(gav.staging_fact):
+            print('File is ' + file)
+            file_dir = gav.staging_fact + '\\' + file
+            print(file_dir)
+            if file.split('.')[1] == 'csv':
+                file_format = 'csv'
+                header = gav.header
+                inferSchema = gav.inferSchema
+            elif file.split('.')[1] == 'parquet':
+                file_format = 'parquet'
+                header = 'NA'
+                inferSchema = 'NA'
+        df_fact = load_files(spark=spark, file_dir=file_dir, file_format=file_format, header=header, inferSchema=inferSchema)
 
-        # Initiate run_presc_data_preprocessing Script
-            # Perform data Cleaning Operations
-            # Validate
-            # Set up logging Configuration Mechanism
-            # Set up Error Handling
+        # Validate run_data_ingest script for city Dimension dataframe & Prescriber Fact dataframe
+        df_count(df_city, dfName='df_city')
+        df_top10_rec(df_city, dfName='df_city')
 
-        # Initiate run_presc_data_transform Script
-            # Apply all the transformation Logics
-            # Validate
-            # Set up logging Configuration Mechanism
-            # Set up Error Handling
+        df_count(df_fact, dfName='df_fact')
+        df_top10_rec(df_fact, dfName='df_fact')
+        # Load the Prescriber Fact File
 
-        # Initiate run_presc_data_extraction Script
-            # Validate
-            # Set up logging Configuration Mechanism
-            # Set up Error Handling
+        # Validate
+        # Set up logging Configuration Mechanism
+        # Set up Error Handling
+
+    # Initiate run_presc_data_preprocessing Script
+        # Perform data Cleaning Operations
+        # Validate
+        # Set up logging Configuration Mechanism
+        # Set up Error Handling
+
+    # Initiate run_presc_data_transform Script
+        # Apply all the transformation Logics
+        # Validate
+        # Set up logging Configuration Mechanism
+        # Set up Error Handling
+
+    # Initiate run_presc_data_extraction Script
+        # Validate
+        # Set up logging Configuration Mechanism
+        # Set up Error Handling
         logging.info("presc_run_pipeline is completed.")
     except Exception as exp:
-        logging.error("Error Occured in main() method. Please check again to go to the respective module and fix it."+str(exp), exc_info=True)
+        logging.error("Error Occurred in main() method. Please check again to go to the respective module and fix it."+str(exp), exc_info=True)
         sys.exit(1)
 
 # End of Applications Part 1
