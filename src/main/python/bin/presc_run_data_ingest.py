@@ -1,7 +1,6 @@
 
 import logging
 import logging.config
-import pandas
 logging.config.fileConfig(fname='../util/logging_to_file.conf')
 logger = logging.getLogger(__name__)
 

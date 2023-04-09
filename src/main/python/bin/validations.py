@@ -34,7 +34,7 @@ def df_top10_rec(df, dfName):
         logger.info(f"The DataFrame validation by top 10 record df_top10_rec() is started for DataFrame {dfName} ...")
         logger.info("The DataFrame top 10 record are: ")
         df_pandas = df.limit(10).toPandas()
-        logger.info('\n \t' + df_pandas.to_string(index=False))
+        logger.info('\n \t' + df_pandas.to_string(index = False))
     except Exception as exp:
         logger.error("Error in method - df_top10_rec(). Please check the Stack Trace" + str(exp))
         raise

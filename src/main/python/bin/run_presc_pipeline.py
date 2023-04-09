@@ -76,7 +76,7 @@ def main():
         # Set up Error Handling
         logging.info("presc_run_pipeline is completed.")
     except Exception as exp:
-        logging.error("Error Occurred in main() method. Please check again to go to the respective module and fix it."+str(exp), exc_info=True)
+        logging.error("Error Occurred in main() method. Please check again to go to the respective module and fix it." + str(exp), exc_info=True)
         sys.exit(1)
 
 # End of Applications Part 1
