@@ -1,8 +1,9 @@
 # Import all the necessary modules
 import get_all_variables as gav
 from create_objects import get_spark_object
-from validations import get_curr_date, df_count, df_top10_rec
+from validations import get_curr_date, df_count, df_top10_rec, df_print_schema
 from presc_run_data_ingest import load_files
+from presc_run_data_preprocessing import perform_data_clean
 import sys
 import logging
 import logging.config
@@ -17,7 +18,7 @@ def main():
         get_curr_date(spark)
 
         # Initiate run_presc_data_ingestion Script
-            # Load the City File
+        # Load the City File
         for file in os.listdir(gav.staging_dim_city):
             print('File is ' + file)
             file_dir = gav.staging_dim_city + '\\' + file
@@ -52,15 +53,17 @@ def main():
 
         df_count(df_fact, dfName='df_fact')
         df_top10_rec(df_fact, dfName='df_fact')
-        # Load the Prescriber Fact File
-
-        # Validate
-        # Set up logging Configuration Mechanism
-        # Set up Error Handling
 
     # Initiate run_presc_data_preprocessing Script
-        # Perform data Cleaning Operations
+        # Perform data Cleaning Operations for df_city & df_fact
+        df_city_sel, df_fact_sel = perform_data_clean(df_city, df_fact)
         # Validate
+        df_top10_rec(df_city_sel, 'df_city_sel')
+        df_top10_rec(df_fact_sel, 'df_fact_sel')
+
+        # Print schema
+        df_print_schema(df_fact_sel, 'df_fact_sel')
+
         # Set up logging Configuration Mechanism
         # Set up Error Handling
 

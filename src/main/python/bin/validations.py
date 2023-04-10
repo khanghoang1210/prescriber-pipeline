@@ -40,3 +40,16 @@ def df_top10_rec(df, dfName):
         raise
     else:
         logger.info("The DataFrame validation by count df_top10_rec() is completed.")
+
+def df_print_schema(df, dfName):
+    try:
+        logger.info(f"DataFrame Schema validation for DataFrame {dfName}")
+        sch = df.schema.fields
+        logger.info(f"DataFrame Schema is {dfName}")
+        for i in sch:
+            logger.info(f"\t{i}")
+    except Exception as exp:
+        logger.error("Error in the method - df_print_schema(). Please check the Stack Trace." + str(exp),exc_info=True)
+        raise
+    else:
+        logger.info("The DataFrame Schema validation is completed.")
