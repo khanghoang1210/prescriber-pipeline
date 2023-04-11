@@ -1,7 +1,8 @@
 import logging
 import logging.config
-from pyspark.sql.functions import upper, lit, regexp_extract, col
-
+from pyspark.sql.functions import upper, lit, regexp_extract, col, concat_ws, \
+    isnan, count, when, avg, coalesce, round
+from pyspark.sql.window import Window
 logging.config.fileConfig(fname='../util/logging_to_file.conf')
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,25 @@ def perform_data_clean(df1, df2):
         df_fact_sel = df_fact_sel.withColumn("years_of_exp", regexp_extract("years_of_exp", pattern, idx))
         # 5.Convert the years_of_exp datatype from string to int
         df_fact_sel = df_fact_sel.withColumn("years_of_exp", col("years_of_exp").cast("int"))
+        # 6.Combine first name and last name
+        df_fact_sel = df_fact_sel.withColumn("presc_fullname", concat_ws(" ", "presc_fname", "presc_lname"))
+        df_fact_sel = df_fact_sel.drop("presc_fname", "presc_lname")
+        # 7.Check and clean all Null/Nan values
+        #df_fact_sel.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_fact_sel.columns]).show()
+        # 8.Delete the records where null
+        df_fact_sel = df_fact_sel.dropna(subset="presc_id")
+        df_fact_sel = df_fact_sel.dropna(subset="presc_city")
+        df_fact_sel = df_fact_sel.dropna(subset="presc_state")
+        df_fact_sel = df_fact_sel.dropna(subset="presc_spclt")
+        df_fact_sel = df_fact_sel.dropna(subset="years_of_exp")
+        df_fact_sel = df_fact_sel.dropna(subset="drug_name")
+        df_fact_sel = df_fact_sel.dropna(subset="total_day_supply")
+        df_fact_sel = df_fact_sel.dropna(subset="total_drug_cost")
+        # 9.Impute trx_cnt where it is null as average of trx_cnt that prescriber
+        spec = Window.partitionBy("presc_id")
+        df_fact_sel = df_fact_sel.withColumn("trx_cnt", coalesce("trx_cnt", round(avg("trx_cnt").over(spec))))
+        df_fact_sel = df_fact_sel.withColumn("trx_cnt", col("trx_cnt").cast("integer"))
+        df_fact_sel.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_fact_sel.columns]).show()
     except Exception as exp:
         logger.error("Error in the - method perform_data_clean(). Please check the Stack Trace." + str(exp), exc_info=True)
         raise
