@@ -55,6 +55,7 @@ def perform_data_clean(df1, df2):
         spec = Window.partitionBy("presc_id")
         df_fact_sel = df_fact_sel.withColumn("trx_cnt", coalesce("trx_cnt", round(avg("trx_cnt").over(spec))))
         df_fact_sel = df_fact_sel.withColumn("trx_cnt", col("trx_cnt").cast("integer"))
+        # count null/nan values in the columns
         df_fact_sel.select([count(when(isnan(c) | col(c).isNull(), c)).alias(c) for c in df_fact_sel.columns]).show()
     except Exception as exp:
         logger.error("Error in the - method perform_data_clean(). Please check the Stack Trace." + str(exp), exc_info=True)

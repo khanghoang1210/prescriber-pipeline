@@ -4,6 +4,7 @@ from create_objects import get_spark_object
 from validations import get_curr_date, df_count, df_top10_rec, df_print_schema
 from presc_run_data_ingest import load_files
 from presc_run_data_preprocessing import perform_data_clean
+from presc_run_data_transform import city_report, top5_Prescribers
 import sys
 import logging
 import logging.config
@@ -64,15 +65,17 @@ def main():
         # Print schema
         df_print_schema(df_fact_sel, 'df_fact_sel')
 
-        # Set up logging Configuration Mechanism
-        # Set up Error Handling
-
     # Initiate run_presc_data_transform Script
-        # Apply all the transformation Logics
-        # Validate
-        # Set up logging Configuration Mechanism
-        # Set up Error Handling
+        df_city_final = city_report(df_city_sel, df_fact_sel)
+        df_presc_final = top5_Prescribers(df_fact_sel)
 
+        # Validate for df_city_final
+        df_top10_rec(df_city_final, 'df_city_final')
+        df_print_schema(df_city_final, 'df_city_final')
+
+        # Validate for df_presc_final
+        df_top10_rec(df_presc_final, 'df_presc_final')
+        df_print_schema(df_presc_final, 'df_presc_final')
     # Initiate run_presc_data_extraction Script
         # Validate
         # Set up logging Configuration Mechanism
