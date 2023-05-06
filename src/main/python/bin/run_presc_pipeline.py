@@ -9,6 +9,9 @@ import sys
 import logging
 import logging.config
 import os
+from subprocess import Popen, PIPE
+from presc_run_data_extraction import extract_files
+
 logging.config.fileConfig(fname='../util/logging_to_file.conf')
 def main():
     try:
@@ -77,9 +80,11 @@ def main():
         df_top10_rec(df_presc_final, 'df_presc_final')
         df_print_schema(df_presc_final, 'df_presc_final')
     # Initiate run_presc_data_extraction Script
-        # Validate
-        # Set up logging Configuration Mechanism
-        # Set up Error Handling
+        CITY_PATH = gav.output_city
+        extract_files(df_city_final, 'json', CITY_PATH, 1, False, 'bzip2')
+
+        PRESC_PATH = gav.output_fact
+        extract_files(df_presc_final, 'orc', PRESC_PATH, 2, False, 'snappy')
         logging.info("presc_run_pipeline is completed.")
     except Exception as exp:
         logging.error("Error Occurred in main() method. Please check again to go to the respective module and fix it." + str(exp), exc_info=True)
