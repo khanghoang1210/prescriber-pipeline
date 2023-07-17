@@ -13,6 +13,7 @@ inferSchema = os.environ['inferSchema']
 # Set other variables
 appName = "USA Prescriber Researcher Report"
 current_path = os.getcwd()
-staging_dim_city = current_path + '/staging/dimension_city'
-fact = current_path + '/staging/fact'
+staging_dim_city = current_path + '/src/main/python/staging/dimension_city'
+fact = current_path + '/src/main/python/staging/fact'
+
 
