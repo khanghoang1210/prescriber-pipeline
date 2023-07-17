@@ -9,7 +9,7 @@ import logging.config
 # Load the logginf configuration file
 #logging.config.fileConfig(fname='../util/logging_to_file.conf')
 
-logging.config.fileConfig(fname='/home/khanghoang/project/prescriber_pipeline/src/main/python/util/logging_to_files.conf',disable_existing_loggers=False)
+logging.config.fileConfig(fname='src/main/python/util/logging_to_files.conf')
 
 def main():
     try:
@@ -21,7 +21,7 @@ def main():
 
         logging.info("run_presc_pipeline is compeleted...")
     except Exception as exp:
-        logging.info("Error occured in the main() method. Please check the Stack Trace, " + str(exp))
+        logging.error("Error occured in the main() method. Please check the Stack Trace, " + str(exp), exc_info=True)
 
 if __name__ == '__main__':  
     logging.info("run_presc_pipeline is started!!!")
