@@ -4,6 +4,7 @@ import get_all_variables as gav
 from create_objects import get_spark_object
 from validations import get_curr_date, df_count, df_top10_rec
 from data_ingestion import load_files
+from data_preprocessing import perform_data_clean
 import logging
 import logging.config
 import os
@@ -50,10 +51,15 @@ def main():
             file_format = 'parquet'
             header = 'NA'
             inferSchema = 'NA'
-         # Validate dimesion file
+         # Validate fact file
         df_fact = load_files(spark=spark, file_format=file_format, file_dir=file_dir, header=header, inferSchema=inferSchema)
         df_count(df_fact,'df_fact')
         df_top10_rec(df_fact, 'df_fact')
+
+        # preprocessing data
+        df_city_sel = perform_data_clean(df_city)
+        df_top10_rec(df_city_sel, 'df_city_sel')
+
         logging.info("run_presc_pipeline is compeleted.")
     except Exception as exp:
         logging.error("Error occured in the main() method. Please check the Stack Trace, " + str(exp), exc_info=True)
