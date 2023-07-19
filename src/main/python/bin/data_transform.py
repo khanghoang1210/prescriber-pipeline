@@ -1,5 +1,5 @@
 
-from pyspark.sql.functions import upper, size, countDistinct, sum
+from pyspark.sql.functions import upper, size, countDistinct, sum, dense_rank, col
 from pyspark.sql.window import Window
 import logging
 import logging.config
@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 def city_report(df_city_sel, df_fact_sel):
     try:
+        logger.info("city_report() is started...")
         # # City report
         # # Transform logics
         # 1. Calculate the number of zips in each city
@@ -34,4 +35,33 @@ def city_report(df_city_sel, df_fact_sel):
         raise
     else:
         logger.info("Transform city_report() is completed.")
-        return df_city_final
+    return df_city_final
+    
+def top_5_Prescribers(df_fact_sel):
+   
+    ## Prescriber Report:
+    # Top 5 Prescribers with highest trx_cnt per each state.
+    # Consider the prescribers only from 20 to 50 years of experience.
+    # Layout:
+    #   Prescriber ID
+    #   Prescriber Full Name
+    #   Prescriber State
+    #   Prescriber Country
+    #   Prescriber Years of Experience
+    #   Total TRX Count
+    #   Total Days Supply
+    #   Total Drug Cost
+    try:
+        logger.info("top_5_Prescribers() is started...")
+        spec = Window.partitionBy("presc_state").orderBy(col("trx_cnt").desc())
+        df_presc_final = df_fact_sel.select("presc_id","presc_fullname","presc_state","country_name","years_of_exp","trx_cnt","total_day_supply","total_drug_cost")\
+                                    .filter((df_fact_sel.years_of_exp >= 20) & (df_fact_sel.years_of_exp <= 50))\
+                                    .withColumn("dense_rank", dense_rank().over(spec))\
+                                    .filter(col("dense_rank") <= 5)\
+                                    .select("presc_id","presc_fullname","presc_state","country_name","years_of_exp","trx_cnt","total_day_supply","total_drug_cost")
+    except Exception as exp:
+        logger.error("Error in the method top_5_Prescribers(). Please check the Stack Trace, " + str(exp), exc_info=True)
+        raise
+    else:
+        logger.info("top_5_Prescribers() is completed.")
+    return df_presc_final

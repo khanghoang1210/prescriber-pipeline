@@ -5,7 +5,7 @@ from create_objects import get_spark_object
 from validations import get_curr_date, df_count, df_top10_rec, df_print_schema
 from data_ingestion import load_files
 from data_preprocessing import perform_data_clean
-from data_transform import city_report
+from data_transform import city_report, top_5_Prescribers
 import logging
 import logging.config
 import os
@@ -67,6 +67,12 @@ def main():
         df_city_final = city_report(df_city_sel, df_fact_sel)
         df_top10_rec(df_city_final, 'df_city_final')
         df_print_schema(df_city_final, 'df_city_final')
+
+        # Transform data prescribers
+        df_presc_final = top_5_Prescribers(df_fact_sel)
+        df_top10_rec(df_presc_final, 'df_presc_final')
+        df_print_schema(df_presc_final, 'df_presc_final')
+        
         logging.info("run_presc_pipeline is compeleted.")
     except Exception as exp:
         logging.error("Error occured in the main() method. Please check the Stack Trace, " + str(exp), exc_info=True)
