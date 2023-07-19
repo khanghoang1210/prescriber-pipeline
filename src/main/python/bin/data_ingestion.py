@@ -4,7 +4,7 @@ import logging.config
 # Load the logginf configuration file
 #logging.config.fileConfig(fname='../util/logging_to_file.conf')
 
-logging.config.fileConfig(fname='src/main/python/util/logging_to_files.conf')
+logging.config.fileConfig(fname='../util/logging_to_files.conf')
 logger = logging.getLogger(__name__)
 
 

@@ -5,7 +5,7 @@ from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
 
-logging.config.fileConfig(fname='src/main/python/util/logging_to_files.conf')
+logging.config.fileConfig(fname='../util/logging_to_files.conf')
 logger = logging.getLogger(__name__)
 
 

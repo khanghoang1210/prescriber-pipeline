@@ -6,7 +6,7 @@ import logging.config
 from udfs import column_split_cnt
 
 
-logging.config.fileConfig(fname='src/main/python/util/logging_to_files.conf')
+logging.config.fileConfig(fname='../util/logging_to_files.conf')
 logger = logging.getLogger(__name__)
 
 def city_report(df_city_sel, df_fact_sel):
