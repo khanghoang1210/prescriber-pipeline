@@ -19,3 +19,5 @@ current_path = os.getcwd()
 staging_dim_city = 'PrescPipeline/staging/dimension_city'
 fact = 'PrescPipeline/staging/fact'
 
+output_city = 'PrescPipeline/output/dimension_city'
+output_fact = 'PrescPipeline/output/fact'

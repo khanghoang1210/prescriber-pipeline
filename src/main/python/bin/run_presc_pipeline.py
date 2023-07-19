@@ -6,6 +6,7 @@ from validations import get_curr_date, df_count, df_top10_rec, df_print_schema
 from data_ingestion import load_files
 from data_preprocessing import perform_data_clean
 from data_transform import city_report, top_5_Prescribers
+from load_to_hdfs import extract_files
 import logging
 import logging.config
 import os
@@ -100,6 +101,13 @@ def main():
         df_presc_final = top_5_Prescribers(df_fact_sel)
         df_top10_rec(df_presc_final, 'df_presc_final')
         df_print_schema(df_presc_final, 'df_presc_final')
+
+        # Load data to HDFS
+        city_path = gav.output_city
+        extract_files(df_city_final,'json',city_path,1,False,'bzip2')
+
+        fact_path = gav.output_fact
+        extract_files(df_presc_final,'orc',fact_path,2,False,'snappy')
 
         logging.info("run_presc_pipeline is Compeleted.")
     except Exception as exp:
