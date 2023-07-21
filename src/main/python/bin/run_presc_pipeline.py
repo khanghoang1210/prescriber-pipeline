@@ -7,6 +7,7 @@ from data_ingestion import load_files
 from data_preprocessing import perform_data_clean
 from data_transform import city_report, top_5_Prescribers
 from load_to_hdfs import extract_files
+from data_persist import data_persist
 import logging
 import logging.config
 import os
@@ -108,6 +109,10 @@ def main():
 
         fact_path = gav.output_fact
         extract_files(df_presc_final,'orc',fact_path,2,False,'snappy')
+
+        # Persist data at Hive
+        data_persist(spark=spark, df=df_city_final, dfName='df_city_final', partitionBy='delivery_date', mode='append')
+        data_persist(spark=spark, df=df_presc_final, dfName='df_presc_final', partitionBy='delivery_date', mode='append')
 
         logging.info("run_presc_pipeline is Compeleted.")
     except Exception as exp:
