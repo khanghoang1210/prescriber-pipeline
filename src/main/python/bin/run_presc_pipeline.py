@@ -7,7 +7,7 @@ from data_ingestion import load_files
 from data_preprocessing import perform_data_clean
 from data_transform import city_report, top_5_Prescribers
 from load_to_hdfs import extract_files
-from data_persist import data_persist
+from data_persist import data_persist_hive, data_persist_postgre
 import logging
 import logging.config
 import os
@@ -111,8 +111,14 @@ def main():
         extract_files(df_presc_final,'orc',fact_path,2,False,'snappy')
 
         # Persist data at Hive
-        data_persist(spark=spark, df=df_city_final, dfName='df_city_final', partitionBy='delivery_date', mode='append')
-        data_persist(spark=spark, df=df_presc_final, dfName='df_presc_final', partitionBy='delivery_date', mode='append')
+        data_persist_hive(spark=spark, df=df_city_final, dfName='df_city_final', partitionBy='delivery_date', mode='append')
+        data_persist_hive(spark=spark, df=df_presc_final, dfName='df_presc_final', partitionBy='delivery_date', mode='append')
+
+        # Persist data at Postgre
+        data_persist_postgre(spark=spark,df=df_city_final, dfName='df_city_final', url='jdbc:postgresql://localhost:6432/prescpipeline',
+                            driver="org.postgresql.Driver", dbtable=df_city_final, mode='append', user='sparkuser1', password='user1')
+        data_persist_postgre(spark=spark,df=df_presc_final, dfName='df_presc_final', url='jdbc:postgresql://localhost:6432/prescpipeline',
+                            driver="org.postgresql.Driver", dbtable=df_presc_final, mode='append', user='sparkuser1', password='user1')
 
         logging.info("run_presc_pipeline is Compeleted.")
     except Exception as exp:
