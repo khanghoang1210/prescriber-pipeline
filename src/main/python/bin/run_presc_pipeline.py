@@ -116,9 +116,10 @@ def main():
 
         # Persist data at Postgre
         data_persist_postgre(spark=spark,df=df_city_final, dfName='df_city_final', url='jdbc:postgresql://localhost:6432/prescpipeline',
-                            driver="org.postgresql.Driver", dbtable=df_city_final, mode='append', user='sparkuser1', password='user1')
+                            driver="org.postgresql.Driver", dbtable='df_city_final', mode='append', user='sparkuser1', password='user1')
+        
         data_persist_postgre(spark=spark,df=df_presc_final, dfName='df_presc_final', url='jdbc:postgresql://localhost:6432/prescpipeline',
-                            driver="org.postgresql.Driver", dbtable=df_presc_final, mode='append', user='sparkuser1', password='user1')
+                            driver="org.postgresql.Driver", dbtable='df_presc_final', mode='append', user='sparkuser1', password='user1')
 
         logging.info("run_presc_pipeline is Compeleted.")
     except Exception as exp:
